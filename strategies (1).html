@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Архитектура урока — конструктивистский подход</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Mulish:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { overflow-x: hidden; max-width: 100%; }
+  :root {
+    --ink: #1A1A18;
+    --paper: #FAF8F3;
+    --sage: #E8F4E8;
+    --sage-border: #B8D8B8;
+    --sage-accent: #2E7D32;
+    --muted: #7A7060;
+    --border: #E0D8C4;
+    --gold: #B8860B;
+    --gold-light: #F5EDD0;
+  }
+  body { font-family: 'Mulish', sans-serif; background: var(--paper); color: var(--ink); line-height: 1.6; width: 100%; }
+
+  /* HEADER */
+  header {
+    background: var(--sage);
+    padding: 44px 40px 32px;
+    border-bottom: 3px solid var(--sage-border);
+  }
+  .header-inner { max-width: 960px; margin: 0 auto; position: relative; }
+  .header-label { font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--sage-accent); margin-bottom: 12px; font-weight: 700; }
+  h1 { font-family: 'Playfair Display', serif; font-size: clamp(24px, 4vw, 36px); font-weight: 400; line-height: 1.25; margin-bottom: 10px; }
+  h1 em { color: var(--sage-accent); font-style: italic; }
+  .header-sub { font-size: 13px; color: var(--muted); max-width: 560px; line-height: 1.7; }
+
+
+
+
+  /* GLOSSARY */
+  .glossary-block {
+    background: white; border: 1.5px solid var(--border);
+    border-radius: 10px; padding: 22px 26px; margin-top: 20px;
+  }
+  .glossary-toggle {
+    display: flex; align-items: center; justify-content: space-between;
+    cursor: pointer; user-select: none;
+  }
+  .glossary-toggle-title {
+    font-size: 11px; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--muted);
+  }
+  .glossary-arrow { font-size: 13px; color: var(--muted); transition: transform .2s; }
+  .glossary-content { display: none; margin-top: 16px; }
+  .glossary-content.open { display: block; }
+  .glossary-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 10px 24px;
+  }
+  .gloss-item { font-size: 13px; line-height: 1.5; padding: 6px 0;
+    border-bottom: 1px solid var(--border); }
+  .gloss-term { font-weight: 700; color: var(--ink); }
+  .gloss-def { color: var(--muted); }
+
+  /* PDF TIP BLOCK */
+  .start-pdf-tip {
+    display: flex; gap: 18px; align-items: flex-start;
+    background: #F0EBE0; border: 1.5px solid var(--border);
+    border-radius: 10px; padding: 22px 26px; margin-top: 20px;
+  }
+  .pdf-tip-icon {
+    font-size: 28px; width: 44px; height: 44px;
+    background: var(--sage-accent); color: white; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; font-style: normal;
+  }
+  .pdf-tip-title { font-size: 14px; font-weight: 700; color: var(--ink); margin-bottom: 10px; }
+  .pdf-tip-steps { padding-left: 18px; margin: 0 0 10px; }
+  .pdf-tip-steps li { font-size: 13px; color: #333; line-height: 1.65; margin-bottom: 5px; }
+  .pdf-tip-note { font-size: 12px; color: var(--muted); font-style: italic; margin: 0; }
+
+  /* PDF BUTTON */
+  .pdf-btn {
+    padding: 8px 16px; border: 1.5px solid var(--sage-accent); background: white;
+    font-family: 'Mulish', sans-serif; font-size: 12px; font-weight: 700;
+    color: var(--sage-accent); border-radius: 6px; cursor: pointer;
+    transition: all .18s; align-self: center; margin: 6px 0;
+  }
+  .pdf-btn:hover { background: var(--sage-accent); color: white; }
+
+  /* START TAB */
+  .start-section { display: none; max-width: 960px; margin: 0 auto; padding: 32px 40px 60px; }
+  .start-section.active { display: block; }
+  .start-intro {
+    background: var(--sage); border: 1.5px solid var(--sage-border);
+    border-radius: 12px; padding: 28px 32px; margin-bottom: 28px;
+  }
+  .start-intro p { font-size: 14px; color: #333; line-height: 1.75; margin-bottom: 10px; }
+  .start-intro p:last-child { margin-bottom: 0; }
+  .start-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-bottom: 28px; }
+  .start-step {
+    background: white; border: 1.5px solid var(--border);
+    border-radius: 10px; padding: 20px 22px;
+  }
+  .step-num {
+    font-family: 'Playfair Display', serif; font-size: 28px;
+    color: var(--sage-accent); font-weight: 700; line-height: 1;
+    margin-bottom: 8px;
+  }
+  .step-title { font-size: 14px; font-weight: 700; color: var(--ink); margin-bottom: 6px; }
+  .step-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
+  .step-action {
+    display: inline-block; margin-top: 10px; font-size: 12px; font-weight: 700;
+    color: var(--sage-accent); cursor: pointer; text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .start-week {
+    background: #FFF8E1; border: 1.5px solid #F0D060;
+    border-radius: 10px; padding: 22px 26px; margin-bottom: 28px;
+  }
+  .start-week-title {
+    font-size: 11px; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase; color: #BF360C; margin-bottom: 14px;
+  }
+  .week-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+  .week-item { font-size: 13px; color: #444; line-height: 1.5; }
+  .week-item strong { display: block; color: var(--ink); font-weight: 700; margin-bottom: 2px; }
+  .start-principles {
+    background: white; border: 1.5px solid var(--border);
+    border-radius: 10px; padding: 22px 26px;
+  }
+  .start-principles-title {
+    font-size: 11px; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--muted); margin-bottom: 14px;
+  }
+  .principle-list { list-style: none; }
+  .principle-list li {
+    font-size: 13px; color: #333; line-height: 1.6;
+    padding: 8px 0; border-bottom: 1px solid var(--border);
+    display: flex; gap: 10px;
+  }
+  .principle-list li:last-child { border-bottom: none; }
+  .principle-list li::before { content: '→'; color: var(--sage-accent); font-weight: 700; flex-shrink: 0; }
+
+
+  /* TABS */
+  .tabs-bar { background: white; border-bottom: 2px solid var(--border); padding: 0 24px; }
+  .tabs-inner { max-width: 960px; margin: 0 auto; display: flex; align-items: center; flex-wrap: wrap; }
+  .tab-btn {
+    padding: 15px 24px; border: none; background: none;
+    font-family: 'Mulish', sans-serif; font-size: 13px; font-weight: 600;
+    color: var(--muted); cursor: pointer;
+    border-bottom: 3px solid transparent; margin-bottom: -2px;
+    transition: color .2s, border-color .2s;
+    display: flex; align-items: center; gap: 7px;
+  }
+  .tab-btn:hover { color: var(--ink); }
+  .tab-btn.active { color: var(--ink); border-bottom-color: var(--sage-accent); }
+  .tab-count {
+    background: #E8E8E0; color: var(--muted); font-size: 11px; font-weight: 700;
+    padding: 2px 7px; border-radius: 10px;
+  }
+  .tab-btn.active .tab-count { background: var(--sage-accent); color: white; }
+
+  /* FILTERS */
+  .filters-bar {
+    background: #F0EBE0; border-bottom: 1px solid var(--border);
+    padding: 12px 40px; position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+  .filters-inner { max-width: 960px; margin: 0 auto; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; width: 100%; }
+  .search-wrap { position: relative; }
+  .search-wrap::before {
+    content: '⌕'; position: absolute; left: 10px; top: 50%;
+    transform: translateY(-50%); color: var(--muted); font-size: 16px; pointer-events: none;
+  }
+  #search {
+    border: 1.5px solid #C8B896; background: white; padding: 6px 12px 6px 30px;
+    font-size: 13px; font-family: 'Mulish', sans-serif; border-radius: 6px;
+    width: 100%; max-width: 200px; outline: none; transition: border-color .2s;
+  }
+  #search:focus { border-color: var(--sage-accent); }
+  .sep { width: 1px; height: 22px; background: #C8B896; flex-shrink: 0; }
+  .filter-btn {
+    padding: 4px 13px; border: 1.5px solid #C8B896; background: white;
+    font-size: 12px; font-family: 'Mulish', sans-serif; font-weight: 600;
+    color: var(--muted); border-radius: 20px; cursor: pointer; transition: all .18s; white-space: nowrap;
+  }
+  .filter-btn:hover { border-color: var(--sage-accent); color: var(--sage-accent); }
+  .filter-btn.active { background: var(--sage-accent); border-color: var(--sage-accent); color: white; }
+
+  /* MAIN */
+  main { max-width: 960px; margin: 0 auto; padding: 28px 40px 60px; }
+  .count-line { font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 18px; font-weight: 700; }
+  .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px; }
+
+  /* CARD */
+  .card {
+    --card-accent: #888;
+    border-radius: 12px; padding: 20px; cursor: pointer;
+    transition: box-shadow .2s, transform .2s;
+    border: 1.5px solid rgba(0,0,0,0.06);
+  }
+  .card:hover { box-shadow: 0 6px 24px rgba(0,0,0,0.10); transform: translateY(-2px); }
+  .card.open { grid-column: 1 / -1; cursor: default; }
+  .card.open:hover { transform: none; box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+  .card-top { display: flex; align-items: center; gap: 10px; margin-bottom: 11px; }
+  .card-icon { font-size: 22px; }
+  .cat-badge {
+    font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px;
+    color: var(--card-accent); background: rgba(255,255,255,0.55);
+    padding: 3px 10px; border-radius: 20px; border: 1px solid var(--card-accent);
+  }
+  .card-title { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 700; color: var(--ink); margin-bottom: 9px; line-height: 1.3; }
+  .card-problem { font-size: 13px; color: #444; margin-bottom: 9px; line-height: 1.55; }
+  .card-problem strong { color: var(--card-accent); font-weight: 700; }
+  .tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 9px; }
+  .tag { font-size: 10px; color: var(--card-accent); border: 1px solid var(--card-accent); border-radius: 10px; padding: 2px 8px; opacity: 0.75; }
+  .more-link { font-size: 12px; font-weight: 700; color: var(--card-accent); margin-top: 4px; }
+
+  /* EXPANDED */
+  .card-body { display: none; margin-top: 18px; }
+  .card.open .card-body { display: block; }
+  .card.open .more-link { display: none; }
+  .section-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--card-accent); margin-bottom: 5px; margin-top: 14px; }
+  .how-text { font-size: 13px; color: #222; line-height: 1.65; white-space: pre-line; }
+  .tip-block { margin-top: 14px; background: rgba(255,255,255,0.5); border-left: 3px solid var(--card-accent); padding: 11px 14px; border-radius: 0 8px 8px 0; }
+  .tip-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--card-accent); margin-bottom: 4px; }
+  .tip-text { font-size: 13px; font-style: italic; color: #333; line-height: 1.6; }
+  .bonus-text { font-size: 12px; font-style: italic; color: var(--muted); margin-top: 11px; line-height: 1.55; }
+  .bonus-text::before { content: '✦  '; }
+  .source-text { font-size: 10.5px; color: var(--muted); font-style: italic; font-family: 'Playfair Display', serif; margin-top: 10px; padding-top: 9px; border-top: 1px solid rgba(0,0,0,0.08); }
+  .collapse-link { text-align: right; font-size: 11px; color: var(--card-accent); font-weight: 700; margin-top: 12px; opacity: 0.85; cursor: pointer; }
+
+  /* LEGEND */
+  .legend { margin-top: 48px; background: var(--sage); border: 1.5px solid var(--sage-border); border-radius: 10px; padding: 26px 30px; }
+  .legend-title { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--sage-accent); font-weight: 700; margin-bottom: 18px; }
+  .legend-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 18px; }
+  .li-icon { font-size: 20px; margin-bottom: 5px; }
+  .li-label { font-size: 13px; font-weight: 700; color: var(--ink); margin-bottom: 3px; }
+  .li-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+  /* RESPONSIVE */
+  @media (max-width: 640px) {
+    /* Layout */
+    header { padding: 28px 16px 22px; }
+    h1 { font-size: 22px; }
+    .header-sub { font-size: 12px; }
+
+    /* Tabs: wrap onto two lines, hide PDF btn text */
+    .tabs-bar { padding: 0 4px; }
+    .tabs-inner { flex-wrap: wrap; gap: 0; }
+    .tab-btn { padding: 10px 10px; font-size: 11px; flex-shrink: 0; }
+    .pdf-btn { font-size: 11px; padding: 6px 10px; margin: 6px 4px; order: 99; }
+
+    /* Filters */
+    .filters-bar { padding: 10px 12px; position: static; }
+    .filters-inner { flex-wrap: wrap; gap: 6px; }
+    #search { width: 100%; max-width: 100%; }
+    .search-wrap { width: 100%; }
+    .sep { display: none; }
+    .filter-btn { font-size: 11px; padding: 4px 10px; }
+
+    /* Main content */
+    main { padding: 16px 12px 48px; }
+    .start-section { padding: 16px 12px 48px; }
+    .cards-grid { grid-template-columns: 1fr; gap: 12px; }
+
+    /* Cards */
+    .card { padding: 16px; }
+    .card.open { grid-column: 1; }
+    .card-title { font-size: 15px; }
+
+    /* Start tab */
+    .start-intro { padding: 18px 16px; }
+    .start-steps { grid-template-columns: 1fr; }
+    .start-week { padding: 16px; }
+    .week-grid { grid-template-columns: 1fr 1fr; }
+    .start-principles { padding: 16px; }
+    .start-pdf-tip { flex-direction: column; gap: 12px; padding: 16px; }
+    .pdf-tip-icon { width: 36px; height: 36px; font-size: 20px; }
+    .glossary-block { padding: 16px; }
+    .glossary-grid { grid-template-columns: 1fr; }
+
+    /* Legend */
+    .legend { padding: 18px 16px; }
+    .legend-grid { grid-template-columns: 1fr; gap: 12px; }
+
+    /* Count line */
+    .count-line { font-size: 10px; margin-bottom: 12px; }
+  }
+
+
+  /* EXAMPLES BLOCK */
+  .examples-block { margin-top: 14px; }
+  .examples-toggle {
+    font-size: 12px; font-weight: 700; color: var(--card-accent);
+    cursor: pointer; padding: 8px 12px;
+    background: rgba(255,255,255,0.5); border-radius: 6px;
+    border: 1px solid var(--card-accent);
+    display: inline-block; user-select: none;
+    transition: background .15s;
+  }
+  .examples-toggle:hover { background: rgba(255,255,255,0.8); }
+  .examples-content {
+    display: none; margin-top: 10px;
+    font-size: 12.5px; color: #333; line-height: 1.65;
+    background: rgba(255,255,255,0.45); border-radius: 8px;
+    padding: 12px 14px; border: 1px solid rgba(0,0,0,0.07);
+  }
+
+  /* ANIMATIONS */
+  .card { animation: fadeUp .3s ease both; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  .card:nth-child(1) { animation-delay: .03s } .card:nth-child(2) { animation-delay: .06s }
+  .card:nth-child(3) { animation-delay: .09s } .card:nth-child(4) { animation-delay: .12s }
+  .card:nth-child(5) { animation-delay: .15s } .card:nth-child(6) { animation-delay: .18s }
+  .card:nth-child(7) { animation-delay: .20s } .card:nth-child(8) { animation-delay: .22s }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <h1>Архитектура урока:<br><em>Стратегии для разных темпов обучения</em></h1>
+    
+  </div>
+</header>
+
+<div class="tabs-bar">
+  <div class="tabs-inner">
+    <button class="tab-btn active" onclick="switchTab('start',this)">🌱 С чего начать</button>
+    <button class="tab-btn" onclick="switchTab('priemy',this)">🛠 Приёмы <span class="tab-count" id="cnt-priemy">19</span></button>
+    <button class="tab-btn" onclick="switchTab('rekomendacii',this)">📋 Рекомендации <span class="tab-count" id="cnt-rekomendacii">11</span></button>
+    <button class="tab-btn" onclick="switchTab('oshibki',this)">⚠️ Частые ошибки <span class="tab-count" id="cnt-oshibki">10</span></button>
+    <div style="flex:1"></div>
+    <button class="pdf-btn" onclick="downloadPDF()">⬇ PDF</button>
+  </div>
+</div>
+
+<div class="start-section" id="start-section">
+  <div class="start-intro">
+    <p>Этот справочник — для учителей, которые хотят работать с разноуровневым классом осознанно. Здесь нет готовых сценариев уроков — есть инструменты, принципы и типичные ошибки, которые помогут выстроить свою систему.</p>
+    <p>Не нужно внедрять всё сразу. Начните с одного приёма — и попробуйте его три-четыре урока подряд, пока он не войдёт в привычку.</p>
+  </div>
+
+  <div class="start-steps">
+    <div class="start-step">
+      <div class="step-num">1</div>
+      <div class="step-title">Прочитайте раздел «Ошибки»</div>
+      <div class="step-desc">Узнайте, какие привычные решения на самом деле не работают — и почему. Это меняет угол зрения быстрее, чем любой новый приём.</div>
+      <span class="step-action" onclick="switchTabByName('oshibki')">Перейти к Ошибкам →</span>
+    </div>
+    <div class="start-step">
+      <div class="step-num">2</div>
+      <div class="step-title">Выберите одну Рекомендацию</div>
+      <div class="step-desc">Прочитайте раздел «Рекомендации» и выберите один принцип, который вам ближе всего. Начните думать о своём классе через этот угол зрения.</div>
+      <span class="step-action" onclick="switchTabByName('rekomendacii')">Перейти к Рекомендациям →</span>
+    </div>
+    <div class="start-step">
+      <div class="step-num">3</div>
+      <div class="step-title">Попробуйте один Приём</div>
+      <div class="step-desc">Откройте раздел «Приёмы», отфильтруйте по нужной категории и выберите то, что можно применить уже на следующей неделе. Посмотрите примеры для урока внутри карточки.</div>
+      <span class="step-action" onclick="switchTabByName('priemy')">Перейти к Приёмам →</span>
+    </div>
+  </div>
+
+  <div class="start-week">
+    <div class="start-week-title">Маршрут первой недели</div>
+    <div class="week-grid">
+      <div class="week-item"><strong>День 1–2</strong>Прочитайте 3–4 карточки из «Ошибок». Отметьте, что узнали в своей практике.</div>
+      <div class="week-item"><strong>День 3</strong>Выберите один приём из категории «Обратная связь» или «Дифференциация».</div>
+      <div class="week-item"><strong>День 4–5</strong>Попробуйте приём на уроке. Посмотрите на примеры внутри карточки — они помогут адаптировать под свой предмет.</div>
+      <div class="week-item"><strong>После недели</strong>Что сработало? Что удивило? Берёте этот приём в постоянный арсенал — и добавляете следующий.</div>
+    </div>
+  </div>
+
+  <div class="start-principles">
+    <div class="start-principles-title">Три идеи, которые меняют всё</div>
+    <ul class="principle-list">
+      <li>Разный темп и уровень в классе — это не проблема, которую надо решить. Это нормальное состояние любой группы думающих людей.</li>
+      <li>Знание не передаётся — оно строится каждым учеником заново. Задача учителя не объяснить, а создать условия для этого строительства.</li>
+      <li>Начните с малого: один приём, два-три урока, потом следующий. Через месяц у вас будет система — не потому что вы всё перестроили сразу, а потому что шли постепенно.</li>
+    </ul>
+  </div>
+
+  <div class="start-pdf-tip">
+    <div class="pdf-tip-icon">⬇</div>
+    <div class="pdf-tip-body">
+      <div class="pdf-tip-title">Как скачать карточки в PDF</div>
+      <ol class="pdf-tip-steps">
+        <li>Перейдите в нужный раздел — <strong>Приёмы</strong>, <strong>Рекомендации</strong> или <strong>Частые ошибки</strong>.</li>
+        <li>Выберите категорию фильтром или введите запрос в поиске — скачаются только те карточки, которые видны на экране в этот момент.</li>
+        <li>Нажмите кнопку <strong>⬇ PDF</strong> в правом углу панели вкладок.</li>
+        <li>В открывшемся окне выберите <strong>«Сохранить как PDF»</strong> в меню принтера.</li>
+      </ol>
+      <p class="pdf-tip-note">Чтобы скачать все карточки раздела сразу — убедитесь, что выбран фильтр <strong>«Все»</strong> и поиск пустой.</p>
+    </div>
+  </div>
+</div>
+
+<div class="filters-bar" id="filters-bar">
+  <div class="filters-inner">
+    <div class="search-wrap">
+      <input type="text" id="search" placeholder="Поиск..." oninput="renderCards()">
+    </div>
+    <div class="sep"></div>
+    <div id="filter-btns"></div>
+  </div>
+</div>
+
+<main>
+  <div class="count-line" id="count-line"></div>
+  <div class="cards-grid" id="cards-grid"></div>
+  <div class="legend" id="legend-block">
+    <div class="legend-title">Три уровня в классе</div>
+    <div class="legend-grid">
+      <div class="legend-item"><div class="li-icon">🔴</div><div class="li-label">Не понял тему</div><div class="li-desc">Нужна другая точка входа, опора, меньше за раз</div></div>
+      <div class="legend-item"><div class="li-icon">🟡</div><div class="li-label">В процессе</div><div class="li-desc">Стандартный темп, нужна обратная связь</div></div>
+      <div class="legend-item"><div class="li-icon">🟢</div><div class="li-label">Уже понял</div><div class="li-desc">Нужна глубина, самостоятельность, роль эксперта</div></div>
+    </div>
+  </div>
+</main>
+
+<script>
+/* ══════════════════════════════════
+   ПРИЁМЫ
+══════════════════════════════════ */
+const priemy = [
+  { id:1, category:"Дифференциация", bg:"#FFF3CD", accent:"#BF360C", icon:"🎛️",
+    title:"Меню заданий (Choice Boards)",
+    tags:["УДЛ (UDL)","Томлинсон","самостоятельность"],
+    problem:"Единое задание не учитывает разные способы познания и выражения знания",
+    how:"Создай сетку 3×3 — девять заданий по одной теме, разных по форме:\nнапример: <strong>нарисуй · напиши · объясни · сделай · покажи · придумай · сравни · исследуй · научи.</strong>\nУченик выбирает любые 3 в ряд (как в «крестики-нолики»).",
+    tip:"Выбор — не бонус, а педагогический инструмент. Когда ученик выбирает сам, он берёт ответственность за результат. Это начало саморегуляции.",
+    bonus:"Не нужно делать все 9 заданий разной сложности — пусть будут одного уровня, но разного типа. ⚡ Отличие от «Обязательное + выбор»: здесь выбор — про форму (как выразить знание), а не про уровень сложности.",
+    examples:"📐 Математика: тема «Дроби». Меню 3×3 — варианты: нарисуй дробь на схеме · запиши примеры из жизни · объясни соседу что такое ½ · сложи дроби тремя способами · придумай задачу на дроби · сделай карточку-памятку · сравни ¾ и ⅔ · исследуй: есть ли дробь больше 1? · научи: объясни правило сложения.\n📖 Русский язык: тема «Имя прилагательное». Меню: нарисуй предмет и подпиши прилагательными · напиши мини-сочинение · объясни правило склонения · составь предложения · покажи схему связи с существительным · придумай загадку через прилагательные · сравни два предмета · исследуй: какие прилагательные не склоняются · научи: придумай правило для первоклассника.",
+    source:"Tomlinson, C.A. «The Differentiated Classroom» (1999); UDL Guidelines, CAST" },
+  { id:2, category:"Мышление и вопросы", bg:"#D4ECD4", accent:"#1B5E20", icon:"💭",
+    title:"Думаю – Удивляюсь – Хочу узнать (Think – Puzzle – Explore)",
+    tags:["Проект Зеро (Project Zero)","Гарвард","Пиаже","Выготский"],
+    problem:"Ученики пассивно получают информацию, не активируя собственный опыт и не осознавая пробелы",
+    how:"Перед изучением темы — три колонки для каждого:\nДУМАЮ — Что я уже думаю об этом?\nУДИВЛЯЮСЬ — Что меня удивляет? Что непонятно?\nХОЧУ УЗНАТЬ — Что я хочу исследовать?\nПосле — сравни с партнёром, затем — общее обсуждение.",
+    tip:"Колонка «Удивляюсь» — самая ценная. Замешательство — это начало мышления, а не провал. Не торопись его закрыть объяснением.",
+    bonus:"Можно вернуться к таблице в конце темы — что изменилось в «Думаю»? Что осталось в «Удивляюсь»?",
+    examples:"📐 Математика: тема «Умножение». ДУМАЮ — «Умножение — это быстрое сложение». УДИВЛЯЮСЬ — «Почему 3×0=0? Ведь три раза — это три раза!» ХОЧУ УЗНАТЬ — «Есть ли числа, которые нельзя умножить?»\n📖 Русский язык: тема «Предложение». ДУМАЮ — «Предложение — это когда есть точка». УДИВЛЯЮСЬ — «Почему «Петя.» — не предложение?» ХОЧУ УЗНАТЬ — «Может ли предложение состоять из одного слова?»",
+    source:"Ritchhart, Church, Morrison «Making Thinking Visible» (2011); Project Zero, Harvard" },
+  { id:3, category:"Взаимодействие", bg:"#E8E0F0", accent:"#4A148C", icon:"🗣️",
+    title:"Эстафета идей + Говорим по очереди (Rally Robin + Timed Pair Share)",
+    tags:["Каган (Kagan)","Выготский","ЗБР (ZPD)","кооперация"],
+    problem:"В парах говорит один — второй молчит или ждёт готового ответа",
+    how:"ЭСТАФЕТА ИДЕЙ: пара поочерёдно называет идеи по кругу (A→B→A→B). Нельзя пропустить ход.\nГОВОРИМ ПО ОЧЕРЕДИ: каждый получает ровно 30–60 секунд на высказывание — пока говорит один, второй слушает молча.",
+    tip:"Структура убирает доминирование. У медленного ученика гарантировано своё время — учитель не нужен, чтобы это обеспечить.",
+    bonus:"После пар — быстрый общее обсуждение: «Кто услышал что-то интересное от партнёра?»",
+    examples:"📐 Математика: ЭСТАФЕТА ИДЕЙ — «Назовите примеры, где нужно складывать» (A: купили хлеб и молоко → B: собрали урожай яблок и груш → ...). ГОВОРИМ ПО ОЧЕРЕДИ — каждый 45 сек объясняет, как решил задачу про периметр.\n📖 Русский язык: ЭСТАФЕТА ИДЕЙ — «Называйте слова с приставкой ПРЕ-» поочерёдно. ГОВОРИМ ПО ОЧЕРЕДИ — каждый объясняет, как отличает «тся» от «ться».",
+    source:"Kagan, S. «Cooperative Learning» (1994), Kagan Publishing" },
+  { id:4, category:"Опора и среда", bg:"#EDE8E0", accent:"#5D4037", icon:"🪜",
+    title:"Постепенная передача ответственности (Gradual Release of Responsibility)",
+    tags:["Брунер","Выготский","ЗБР (ZPD)","скаффолдинг (scaffolding)"],
+    problem:"Учитель объяснил — и сразу «делайте сами»: слишком большой прыжок для многих",
+    how:"ДЕЛАЮ Я (I Do) — учитель думает вслух, ученики наблюдают.\nДЕЛАЕМ ВМЕСТЕ (We Do) — решают совместно, разделяя ответственность.\nДЕЛАЕТЕ В ГРУППАХ (You Do Together) — пары или группы без учителя.\nДЕЛАЕШЬ САМ (You Do Alone) — самостоятельная работа.",
+    tip:"Это не линейный процесс. Можно вернуться на шаг назад, если группа застряла. Гибкость — не слабость учителя, а точность.",
+    bonus:"«Делаю я» — не лекция. Учитель думает вслух, делая ошибки и исправляя их на глазах у класса.",
+    examples:"📐 Математика: тема «Деление с остатком». I Do — учитель делит 17÷5 вслух, проговаривая каждый шаг и намеренно пробуя 4 («получается 20 — слишком много»). We Do — класс вместе решает 23÷4. You Do Together — пары решают 31÷6. You Do Alone — самостоятельно: 29÷7.\n📖 Русский язык: тема «Безударная гласная». I Do — учитель подбирает проверочное слово к «вода» вслух. We Do — вместе проверяют «леса». You Do Together — пары работают со списком из 5 слов. You Do Alone — индивидуальный диктант.",
+    source:"Fisher & Frey «Better Learning Through Structured Teaching» (2008)" },
+  { id:5, category:"Дифференциация", bg:"#FFF3CD", accent:"#BF360C", icon:"📊",
+    title:"Уровневые задания (Tiered Tasks)",
+    tags:["Томлинсон","разный уровень","одна цель"],
+    problem:"Задания разной сложности выглядят как разные задачи — теряется общая учебная цель",
+    how:"Все три группы работают над ОДНОЙ концептуальной целью:\nУровень 1 — конкретный материал, структура, меньше абстракции.\nУровень 2 — стандартный уровень сложности.\nУровень 3 — открытый вопрос, перенос, создание.",
+    tip:"Не называй уровни «для слабых / для сильных». Можно по цветам или не маркировать вовсе, раздавая адресно.",
+    bonus:"Цель у всех одна — дети не должны чувствовать, что изучают «другую» тему.",
+    examples:"📐 Математика: тема «Площадь». Цель для всех — понять, что площадь зависит от длин сторон. Уровень 1 — посчитай клетки на рисунке прямоугольника. Уровень 2 — вычисли площадь по формуле. Уровень 3 — придумай прямоугольник с площадью 24 см² тремя способами.\n📖 Русский язык: тема «Синонимы». Цель — понять, что слова с близким значением не взаимозаменяемы. Уровень 1 — найди синоним из списка. Уровень 2 — замени слово синонимом в предложении. Уровень 3 — объясни, почему «смелый» и «дерзкий» — не одно и то же.",
+    source:"Tomlinson «Fulfilling the Promise of the Differentiated Classroom» (2003)" },
+  { id:6, category:"Мышление и вопросы", bg:"#D4ECD4", accent:"#1B5E20", icon:"👁️",
+    title:"Вижу – Думаю – Задаю вопросы (See – Think – Wonder)",
+    tags:["Проект Зеро (Project Zero)","Гарвард","критическое мышление"],
+    problem:"Ученики видят «правильный ответ», а не строят понимание из наблюдений",
+    how:"Показываешь артефакт: картину, график, фото, цитату, уравнение, карту.\nВИЖУ — Что ты буквально видишь? (только факты)\nДУМАЮ — Что ты об этом думаешь? Почему?\nЗАДАЮ ВОПРОСЫ — Какие вопросы у тебя появились?",
+    tip:"«Вижу» и «Думаю» — разные колонки не случайно. Разделение наблюдения и интерпретации — это и есть критическое мышление.",
+    bonus:"Работает с любым предметом. На математике — уравнение. На истории — фотография. На биологии — схема.",
+    examples:"📐 Математика: показываешь числовое выражение 4×(3+2). ВИЖУ — «Вижу скобки, знаки умножения и сложения, числа». ДУМАЮ — «Скобки меняют порядок действий». ЗАДАЮ ВОПРОСЫ — «Что будет, если убрать скобки? Всегда ли скобки меняют результат?»\n📖 Русский язык: показываешь предложение с тремя запятыми. ВИЖУ — «Три запятые, четыре части». ДУМАЮ — «Это перечисление или сложное предложение?» ЗАДАЮ ВОПРОСЫ — «Можно ли поставить точку вместо каждой запятой?»",
+    source:"Ritchhart, Church, Morrison «Making Thinking Visible» (2011); Project Zero, Harvard" },
+  { id:7, category:"Оценивание", bg:"#F5E6F0", accent:"#6A1B9A", icon:"🔀",
+    title:"Вопросы-развилки (Hinge Questions)",
+    tags:["Блэк и Уильям (Black & Wiliam)","формирующее оценивание","обратная связь"],
+    problem:"Непонятно, когда переходить дальше и кому именно нужна поддержка прямо сейчас",
+    how:"В середине урока — один тщательно составленный вопрос с 4 вариантами. Каждый вариант диагностирует конкретное заблуждение.\nВсе отвечают одновременно (карточки А/Б/В/Г или пальцы). Анализируешь за 30 секунд — и перестраиваешься.",
+    tip:"Неправильные варианты важнее правильного. Каждый должен «поймать» реальную ошибку мышления, а не случайную.",
+    bonus:"Один хороший вопрос-развилка лучше пяти обычных. Готовь его заранее, как часть плана урока.",
+    examples:"📐 Математика: вопрос-развилка в середине темы «Дроби»: «Какая дробь больше: ⅔ или ¾?» А) ⅔, потому что 2<3 Б) ¾, потому что 3>2 В) ¾, потому что знаменатель 4>3 Г) Нельзя сравнить без общего знаменателя. Вариант А ловит ошибку сравнения числителей, Б — знаменателей.\n📖 Русский язык: «В каком слове пишется -ться?» А) он учит_ся Б) надо учит_ся В) они стремят_ся Г) хочет учит_ся. Каждый вариант диагностирует конкретное заблуждение о правиле.",
+    source:"Wiliam «Embedded Formative Assessment» (2011); Black & Wiliam «Inside the Black Box» (1998)" },
+  { id:8, category:"Мышление и вопросы", bg:"#D4ECD4", accent:"#1B5E20", icon:"❓",
+    title:"Техника формулировки вопросов (QFT)",
+    tags:["Институт правильного вопроса","исследовательское обучение","автономия"],
+    problem:"Учитель задаёт вопросы — ученики отвечают. Это перевёрнутая логика познания",
+    how:"Даёшь «фокус» — утверждение или образ: «Вода исчезает».\n1. Генерация — 4 мин: пишут ВСЕ вопросы без оценки.\n2. Категоризация: открытые / закрытые.\n3. Приоритизация: выбирают 3 самых важных.\n4. Обсуждение — зачем эти вопросы важны?",
+    tip:"Запрет на оценку при генерации — ключевой. Он создаёт психологическую безопасность для медленных и нестандартно думающих.",
+    bonus:"Лучшие вопросы можно сделать планом изучения темы — это мотивирует как ничто другое.",
+    examples:"📐 Математика: фокус — «В магазине всегда есть сдача». Дети генерируют вопросы: «Почему сдача иногда равна нулю?», «Можно ли получить сдачу больше, чем заплатил?», «Как кассир считает быстро?»\n📖 Русский язык: фокус — «Одно слово может быть разными частями речи». Вопросы: «Как понять, какая это часть речи?», «Есть ли слова, которые всегда одна часть речи?», «Почему «стекло» может быть и глаголом?»",
+    source:"Rothstein & Santana «Make Just One Change» (2011), Right Question Institute" },
+  { id:9, category:"Взаимодействие", bg:"#E8E0F0", accent:"#4A148C", icon:"🧩",
+    title:"Мозаика (Jigsaw II)",
+    tags:["Аронсон (Aronson)","Джонсон и Джонсон","кооперация"],
+    problem:"В группах всегда один активный лидер, остальные пассивно наблюдают",
+    how:"Класс → «домашние» группы (4–5 чел), каждый получает свой фрагмент.\nФаза 1: «Экспертные» группы — все с одинаковым фрагментом изучают его вместе.\nФаза 2: Возврат в «домашние» группы — каждый обучает остальных своему фрагменту.",
+    tip:"Объяснять — значит конструировать знание заново, на более глубоком уровне. Сильный ученик выигрывает не меньше остальных.",
+    bonus:"Без объяснения каждого ни одна группа не получит полную картину — так создаётся реальная взаимозависимость.",
+    examples:"📐 Математика: тема «Единицы длины». Класс делится на 4 группы, каждая изучает одну единицу: миллиметр, сантиметр, дециметр, метр. Экспертные группы — разбирают, когда эта единица используется и как перевести в соседнюю. Домашние группы — каждый объясняет свою единицу, вместе выстраивают цепочку перевода от мм до м.\n📖 Русский язык: тема «Знаки препинания в конце предложения». Группы: точка, вопросительный знак, восклицательный знак, многоточие. Каждая группа изучает один знак: когда ставится, что выражает, примеры. Домашние группы составляют общую таблицу и объясняют друг другу разницу между «Ты пришёл.» / «Ты пришёл?» / «Ты пришёл!»",
+    source:"Aronson (1978); Johnson & Johnson «Cooperation and Competition» (1989)" },
+  { id:10, category:"Роль учителя", bg:"#DDF2EF", accent:"#00695C", icon:"🌱",
+    title:"Похвала за процесс + «Пока не умею» (Process Praise + Not Yet)",
+    tags:["Двек (Dweck)","Стэнфорд","установка на рост (growth mindset)"],
+    problem:"«Не понимающие» считают себя неспособными и сдаются. Быстрые боятся сложных задач",
+    how:"ПОХВАЛА ЗА ПРОЦЕСС — хвалишь не «ты умный», а конкретное действие:\n«Ты нашёл другой подход», «Ты не сдался, когда не получилось сразу».\n«ПОКА НЕ УМЕЮ» — вместо «не знаешь» говоришь: «Ты пока не знаешь — это нормальный этап».",
+    tip:"«Пока не умею» меняет идентичность: из «неудачника» в «путника». Это не мягкость — это точная формулировка реальности обучения.",
+    bonus:"Детям можно прямо объяснить про два типа мышления — они быстро схватывают и начинают замечать это в себе.",
+    examples:"📐 Математика: ученик решил задачу нестандартным способом. Вместо «правильно» — «Ты нашёл другой путь к ответу — расскажи, как ты до этого додумался?» Вместо «неправильно» — «Ты пока не дошёл до последнего шага — что произойдёт, если проверить вычисления?»\n📖 Русский язык: ученик написал сочинение с ошибками, но с интересной идеей. «Твоя мысль про осень очень точная — ты заметил что-то, чего другие не написали. Теперь давай найдём, где можно сделать текст ещё чище.»",
+    source:"Dweck, C. «Mindset: The New Psychology of Success» (2006), Stanford University" },
+  { id:11, category:"Структура урока", bg:"#DDE3F5", accent:"#283593", icon:"🚀",
+    title:"Ключевой вопрос + Что нам нужно знать (Driving Question + Need to Know)",
+    tags:["PBLWorks","Институт Бака (Buck Institute)","проектное обучение"],
+    problem:"Ученики не понимают, зачем учить тему: нет смысла, нет мотивации, нет вопроса",
+    how:"Урок начинается со СТЕРЖНЕВОГО ВОПРОСА — открытого, реального, неоднозначного:\n«Почему одни цивилизации выживают, а другие — нет?»\nЧТО НАМ НУЖНО ЗНАТЬ — класс составляет список: что нужно узнать, чтобы ответить? Этот список становится планом темы.",
+    tip:"Ключевой вопрос должен быть искренне открытым — без заранее известного «правильного» ответа. Иначе это задание, а не исследование.",
+    bonus:"Список «Что нам нужно знать» обновляй по ходу — что узнали? Какие новые вопросы появились?",
+    examples:"📐 Математика: ключевой вопрос — «Зачем люди придумали дроби, если есть целые числа?» ЧТО НАМ НУЖНО ЗНАТЬ: что такое часть целого · как записывать · как сравнивать · где дроби встречаются в жизни.\n📖 Русский язык: ключевой вопрос — «Почему одни тексты хочется читать, а другие — нет?» ЧТО НАМ НУЖНО ЗНАТЬ: что такое структура текста · роль прилагательных и глаголов · как работает начало и конец.",
+    source:"Boss & Larmer «Project Based Teaching» (2018), PBLWorks / Buck Institute for Education" },
+  { id:12, category:"Оценивание", bg:"#F5E6F0", accent:"#6A1B9A", icon:"📓",
+    title:"Дневник обучения + Билет на выход 3-2-1 (Learning Journal + Exit Ticket)",
+    tags:["EEF — Фонд образовательных исследований","Флейвелл (Flavell)","метапознание (metacognition)"],
+    problem:"Ученики не знают, что они поняли, а что нет — и не умеют это оценить самостоятельно",
+    how:"ДНЕВНИК ОБУЧЕНИЯ (2–3 мин): ученик записывает не «что мы делали», а «что я думал».\nБИЛЕТ НА ВЫХОД 3-2-1:\n3 — что узнал\n2 — что хочу исследовать глубже\n1 — вопрос, который остался",
+    tip:"Фонд образовательных исследований  ставит метакогнитивные стратегии в топ-3 по эффективности: +7 месяцев обучения при минимальных затратах. Рефлексия — не пара минут в конце, а ядро обучения.",
+    bonus:"Дневник можно вести всю тему — в конце ученик видит, как изменилось его понимание.",
+    examples:"📐 Математика: ДНЕВНИК — «Сегодня я понял, что умножение на 0 — это не «ничего не делать», а «взять ноль раз». БИЛЕТ НА ВЫХОД 3-2-1: 3 вещи — знаю таблицу умножения на 6, 7, 8; 2 — хочу понять умножение на 9 через пальцы; 1 вопрос — почему 6×7=7×6?\n📖 Русский язык: ДНЕВНИК — «Я раньше думал, что запятая ставится где хочется. Теперь знаю три правила». БИЛЕТ НА ВЫХОД: 3 — знаю правила однородных членов, прямой речи, сложного предложения; 2 — хочу разобраться с деепричастным оборотом; 1 вопрос — почему в некоторых учебниках правила разные?",
+    source:"EEF «Metacognition and Self-regulation» (2021); Flavell (1976) — metacognition" },
+  { id:13, category:"Структура урока", bg:"#DDE3F5", accent:"#283593", icon:"🎯",
+    title:"Обязательное + выбор (Must – May – Challenge)",
+    tags:["Томлинсон","УДЛ","автономия","темп"],
+    problem:"При одном задании для всех нет ни успеха у медленных, ни роста у быстрых",
+    how:"Каждое задание — три слоя:\nОБЯЗАТЕЛЬНО (Must) — ядро, минимум понимания для каждого.\nМОЖНО (May) — дополнительная практика по выбору формата.\nВЫЗОВ (Challenge) — для тех, кто закончил: придумать, исследовать, объяснить другому.\nПример: Must → подпиши части растения · May → объясни функцию · Challenge → придумай растение для пустыни.",
+    tip:"«Вызов» — не усложнённый вариант того же задания, а качественно другой тип мышления: от воспроизведения к созданию. ⚡ Отличие от «Меню заданий»: здесь выбор — про уровень глубины (обязательное/вызов), а не про форму выражения знания.",
+    bonus:"Проговори вслух: «Важно качественно сделать главное — не обязательно закончить всё». Это снимает тревогу у медленных.",
+    examples:"📐 Математика: тема «Периметр». MUST — вычисли периметр прямоугольника 4×6. MAY — вычисли периметр любой фигуры на листе в клетку. CHALLENGE — придумай фигуру с периметром ровно 20 см тремя разными способами.\n📖 Русский язык: тема «Сравнение». MUST — найди сравнения в тексте и подчеркни. MAY — замени одно сравнение на своё. CHALLENGE — перепиши абзац, убрав все сравнения — что изменилось в тексте?",
+    source:"Tomlinson, C.A. «The Differentiated Classroom» (1999); UDL Guidelines, CAST" },
+  { id:14, category:"Опора и среда", bg:"#EDE8E0", accent:"#5D4037", icon:"🧗",
+    title:"Лестница подсказок (Scaffold Ladder)",
+    tags:["Выготский","ЗБР","скаффолдинг","саморегуляция"],
+    problem:"Застрявший ученик либо ждёт учителя, либо сдаётся — оба варианта останавливают мышление",
+    how:"К сложному заданию — три подсказки от общей к конкретной:\nПодсказка 1 — направление: «Подумай про температуру».\nПодсказка 2 — понятие: «Что происходит с молекулами при нагреве?»\nПодсказка 3 — почти ответ: «Тепло увеличивает движение частиц».\nУченик берёт их сам — только когда нужно, только следующую.",
+    tip:"Три уровня подсказок — это архитектура саморегуляции. Ученик сам решает, сколько опоры ему нужно.",
+    bonus:"Введи правило: сначала подсказка 1, думай 5 минут — только тогда подсказка 2. Замедление — часть мышления.",
+    examples:"📐 Математика: задача на составление уравнения. Подсказка 1 — «Что в задаче неизвестно?» Подсказка 2 — «Как обозначить неизвестное буквой?» Подсказка 3 — «Если билет стоит х рублей, а куплено 3 билета, как записать общую стоимость?»\n📖 Русский язык: правило написания -тся/-ться. Подсказка 1 — «Задай вопрос к глаголу». Подсказка 2 — «Вопрос «что делать?» или «что делает?»» Подсказка 3 — «Если в вопросе есть Ь — он будет и в глаголе».",
+    source:"Wood, Bruner & Ross «The role of tutoring in problem solving» (1976); Vygotsky — ZPD" },
+  { id:15, category:"Структура урока", bg:"#DDE3F5", accent:"#283593", icon:"🌐",
+    title:"Открытые задания (Open-ended Tasks)",
+    tags:["конструктивизм","дивергентное мышление","все уровни"],
+    problem:"Закрытое задание с одним ответом работает только на один уровень — остальные скучают или не могут начать",
+    how:"Формулируй задание так, чтобы глубина ответа не была ограничена:\n«Сколько способов использовать воду ты можешь придумать?»\n«Найди все возможные решения».\n«Придумай существо, которое могло бы выжить в этой среде».\nКаждый работает на своём уровне глубины — и все над одним заданием.",
+    tip:"Открытый вопрос — не размытый. Он конкретен по теме, но открыт по глубине. «Сколько способов решить?» — в точку.",
+    bonus:"Попроси сравнить ответы в парах: «Сравните ваши ответы. Какие ответы партнёра показались вам интересными или полезными? Почему?» — это само по себе учебная задача.",
+    examples:"📐 Математика: «Сколькими способами можно разложить число 12 в произведение двух множителей?» Медленные находят 2–3 способа, быстрые — все 6 и замечают связь с делителями.\n📖 Русский язык: «Придумай как можно больше предложений про одно и то же событие — но каждый раз другими словами». Медленные пишут 2–3 варианта, быстрые исследуют, как меняется смысл при замене слов.",
+    source:"Resnick, L.B. «Education and Learning to Think» (1987); Dweck — growth mindset" },
+  { id:16, category:"Оценивание", bg:"#F5E6F0", accent:"#6A1B9A", icon:"📡",
+    title:"Микро-проверки на лету (Formative Check-ins)",
+    tags:["Блэк и Уильям (Black & Wiliam)","формирующее оценивание","обратная связь"],
+    problem:"Учитель не знает, кто «уже тут», а кто «ещё не тут» — до контрольной",
+    how:"Быстрые сигналы понимания — не ради оценки, ради навигации:\nЖЕСТ: большой палец вверх / горизонтально / вниз.\nМИНИ-КАРТОЧКА: один вопрос — сдают перед выходом.\nОБЪЯСНИ СОСЕДУ: 60 секунд своими словами.\nПо результату — сразу действуй:\n→ треть класса не понимает: перестрой объяснение;\n→ 3–4 ребёнка отстают: мини-группа, остальным усложнение.",
+    tip:"Критерии успеха — в детских формулировках: «я могу решить с подсказкой / без / объяснить другому». Тогда дети сами знают, где они.",
+    bonus:"Ценность не в сигнале — в реакции учителя в следующие две минуты. Здесь живёт формирующее оценивание.",
+    examples:"📐 Математика: ЖЕСТ — после объяснения темы «Дроби» — большой палец вверх/горизонтально/вниз. Трое не понимают → мини-группа у доски, остальные решают задачи-вызовы. МИНИ-КАРТОЧКА — «Запиши дробь, которая обозначает половину пирога».\n📖 Русский язык: ОБЪЯСНИ СОСЕДУ — «60 секунд: объясни партнёру, как ты отличаешь приставку от предлога». Учитель слушает пары и замечает типичные ошибки в объяснениях.",
+    source:"Black & Wiliam «Inside the Black Box» (1998); Wiliam «Embedded Formative Assessment» (2011)" },
+  { id:17, category:"Дифференциация", bg:"#FFF3CD", accent:"#BF360C", icon:"⏸️",
+    title:"Золотая минута тишины",
+    tags:["метапознание","темп","Выготский","саморегуляция"],
+    problem:"Быстрые выкрикивают ответ раньше, чем медленные успевают сформулировать мысль — и медленные перестают думать",
+    how:"ОТЛОЖЕННЫЙ СТАРТ: задав вопрос, скажи: «Ответы принимаю через 20 секунд» или «Жду минимум три варианта». Все думают — никто не выкрикивает.\nЗОЛОТАЯ МИНУТА: после объяснения — 1 минута полной тишины.\nМедленные: переваривают, дописывают конспект.\nБыстрые: формулируют вопрос — «Что непонятно?» или «А что, если...?»\nУчитель молчит. Идёт внутренняя работа мысли.",
+    tip:"Тишина — не пауза между активностями. Это и есть активность. Мышление происходит в тишине.",
+    bonus:"Попробуй ввести как регулярный элемент урока — многим детям это время становится важным.",
+    examples:"📐 Математика: задача про скорость. ОТЛОЖЕННЫЙ СТАРТ — «Прочитайте задачу, подумайте молча 30 секунд, не пишите». Через 30 сек — «Кто готов объяснить, что происходит в задаче?» Медленные успевают войти, быстрые формулируют не ответ, а вопрос к задаче.\n📖 Русский язык: диктант. ЗОЛОТАЯ МИНУТА после диктанта — «Перечитайте молча, проверьте сами». Учитель не говорит ничего. Дети исправляют 30–40% ошибок самостоятельно.",
+    source:"Rowe, M.B. «Wait time and rewards» (1974); Vygotsky — внутренняя речь" },
+  { id:18, category:"Обратная связь", bg:"#F5E6F0", accent:"#6A1B9A", icon:"🗺️",
+    title:"Карта ошибок (Metacognitive Pause)",
+    tags:["метапознание","Флейвелл","зона ближайшего развития","рефлексия"],
+    problem:"Сильные скучают над готовым ответом, слабые получают объяснение «сверху» — психологически далёкое",
+    how:"Попроси тех, кто уже разобрался, составить «Карту ошибок»:\n«Напиши инструкцию для новичка: на какие «грабли» чаще всего наступают в этой теме?»\nИли: «Придумай три ловушки в этой задаче и объясни, как их избежать».\nГотовые карты становятся опорными карточками для остальных.",
+    tip:"Объяснить другому — значит конструировать знание заново, на более глубоком уровне. Тот, кто объясняет, выигрывает не меньше.",
+    bonus:"Инструкция «от ученика» психологически ближе — она написана на том же языке и про те же ошибки.",
+    examples:"📐 Математика: быстрые ученики после темы «Вычитание с переходом через десяток» составляют «Карту ошибок»: «Ошибка 1 — забывают уменьшить десяток. Ошибка 2 — путают, из чего вычитают. Как избежать: всегда рисуй схему с десятками».\n📖 Русский язык: после темы «Безударные гласные» — «Придумай три ловушки для новичка и объясни, как их не попасть». Готовые карты вывешиваются на стену как опора для тех, кто ещё разбирается.",
+    source:"Vygotsky — ЗБР; Flavell (1976) — metacognition; исследования peer tutoring" },
+  { id:20, category:"Оценивание", bg:"#F5E6F0", accent:"#6A1B9A", icon:"✅",
+    title:"Чек-лист самопроверки",
+    tags:["метапознание","EEF — Фонд образовательных исследований","саморегуляция","автономия"],
+    problem:"Ученик сдаёт работу, не зная — сделал ли он всё. Проверка остаётся только за учителем",
+    how:"К каждому заданию — короткий чек-лист в детских формулировках:\n☐ Я ответил на вопрос задания?\n☐ Я нашёл главную мысль?\n☐ Я могу объяснить это своими словами?\n☐ Я проверил на ошибки?\nЧек-лист дифференцируй: базовый (3 пункта) и расширенный (5–6 пунктов).",
+    tip:"Чек-лист — момент, когда ученик смотрит на свою работу глазами другого человека. Именно здесь рождается метапознание.",
+    bonus:"Попроси учеников самих дополнить чек-лист — они удивятся, насколько хорошо знают критерии.",
+    examples:"📐 Математика: чек-лист к задаче. ☐ Я записал условие? ☐ Я нашёл что ищу? ☐ Я могу объяснить каждый шаг? ☐ Я проверил ответ (подстановкой или прикидкой)? Расширенный: ☐ Я рассмотрел другой способ решения? ☐ Могу ли я придумать похожую задачу?\n📖 Русский язык: чек-лист к сочинению. ☐ Есть начало, середина, конец? ☐ Я ответил на вопрос темы? ☐ Все предложения связаны? ☐ Я проверил орфографию? Расширенный: ☐ Есть ли сравнение или яркий образ? ☐ Читается ли вслух без запинок?",
+    source:"EEF «Metacognition and Self-regulation» (2021); Hattie & Timperley «The Power of Feedback» (2007)" }
+];
+
+/* ══════════════════════════════════
+   РЕКОМЕНДАЦИИ
+══════════════════════════════════ */
+const rekomendacii = [
+  { id:1, category:"Роль учителя", bg:"#DDF2EF", accent:"#00695C", icon:"🔄",
+    title:"Переосмысли саму задачу",
+    tags:["конструктивизм","установка","разнообразие как ресурс"],
+    problem:"Разные темп и уровень воспринимаются как проблема, которую нужно «решить»",
+    how:"Спроси себя: «Что мне нужно организовать, чтобы каждый ребёнок мог думать?» — а не «Как объяснить, чтобы все поняли одновременно?»\nНет «слабых» и «сильных» — есть дети в разных точках понимания. Это нормально, потому что знание не передаётся, а строится каждым заново.\nУчитель не «выравнивает» класс — он создаёт среду, где каждый строит своё понимание, опираясь на других.",
+    tip:"Разнообразие — не проблема. Это ресурс. Класс, где все думают одинаково и в одном темпе, беднее, а не богаче.",
+    bonus:"Смена вопроса — с «как объяснить» на «как организовать» — меняет всю профессию.",
+    source:"Vygotsky — зона ближайшего развития; Piaget — конструктивизм" },
+  { id:2, category:"Опора и среда", bg:"#EDE8E0", accent:"#5D4037", icon:"🏗️",
+    title:"Готовь пространство, а не урок",
+    tags:["среда","самостоятельность","визуальные опоры"],
+    problem:"Учитель тратит время на объяснения, которые можно было предусмотреть в среде заранее",
+    how:"Продуманная среда убирает большинство вопросов до того, как они возникли:\nВИЗУАЛЬНЫЕ ОПОРЫ — алгоритм в картинках, ключевые слова, «что делать, если застрял»: ребёнок находит подсказку сам.\nТРИ УРОВНЯ ЗАДАНИЯ готовятся заранее — не «лёгкое / сложное», а «конкретное / абстрактное / исследовательское».\n«БАНК ИДЕЙ» для быстрых — вопросы без ответа, головоломки, мини-проекты: не наказание за скорость, а привлекательный вызов.\nДОГОВОРЁННОСТИ О ПОМОЩИ: кто к кому обращается до учителя.",
+    tip:"Если среда работает правильно — учитель в начале задания почти не нужен. Дети знают: стена → задание → партнёр → учитель.",
+    bonus:"Среда — молчаливый педагог. Она работает, пока ты занят с другой группой.",
+    source:"Montessori — prepared environment; Vygotsky — социальная среда обучения" },
+  { id:3, category:"Дифференциация", bg:"#FFF3CD", accent:"#BF360C", icon:"⏱️",
+    title:"Медленный ≠ слабый. Быстрый ≠ понявший",
+    tags:["темп","нейрокогнитивность","дифференциация"],
+    problem:"Учитель стремится «ускорить» медленных — вместо того чтобы дать каждому нужное",
+    how:"Темп — нейрокогнитивная особенность, не показатель понимания.\nМИНУТА ТИШИНЫ ПЕРЕД СТАРТОМ: «Прочитай задание, подумай про себя». 90 секунд дают медленным войти в задачу до того, как быстрые начнут шуметь.\nСНАЧАЛА — ТЕ, КТО ДУМАЛ ДОЛЬШЕ: при обсуждении первым говорит тот, кому нужно было больше времени. Структурная защита от доминирования.\nРАЗНЫЕ ФИНИШНЫЕ ТОЧКИ: не «все должны успеть всё», а «у каждого есть стартовая задача и следующий шаг».",
+    tip:"Быстрый ребёнок может прыгать по поверхности. Медленный — идти глубоко. Задача учителя — дать обоим нужное.",
+    bonus:"Ребёнок не «не успел» — он дошёл до определённой точки. Это другой разговор.",
+    source:"Rowe (1974) — wait time; Tomlinson — differentiated instruction" },
+  { id:4, category:"Взаимодействие", bg:"#E8E0F0", accent:"#4A148C", icon:"👥",
+    title:"Группа — это структура, а не компания",
+    tags:["кооперация","роли","взаимодействие"],
+    problem:"Групповая работа превращается в «один делает, остальные смотрят»",
+    how:"«Обсудите в группах» без структуры — это хаос. Наша цель — чтобы думал каждый.\nРОЛИ перед стартом: «объясняющий», «задающий вопросы», «проверяющий» — и они меняются каждый раз.\nСМЕШАННЫЕ ГРУППЫ — осознанно и временно. Сильный не делает за другого — он объясняет. Это разные вещи.\nПАРЫ ПО ТЕМПУ — иногда два «медленных» вместе: без давления быстрого они мыслят глубже и смелее.\nЭКСПЕРТНЫЕ ГРУППЫ: каждый знает то, чего не знают другие — это выравнивает статус в классе.",
+    tip:"Смешанный — не значит лучший. Иногда группа из похожих по темпу детей даёт больший результат.",
+    bonus:"Роли называй нейтрально, не иерархично: не «лидер и помощники», а «спикер, секретарь, проверяющий».",
+    source:"Kagan — cooperative structures; Johnson & Johnson — cooperative learning" },
+  { id:5, category:"Оценивание", bg:"#F5E6F0", accent:"#6A1B9A", icon:"🧭",
+    title:"Оценка — это GPS, а не приговор",
+    tags:["формирующее оценивание","обратная связь","Двек"],
+    problem:"Оценка ставится в конце — когда уже поздно что-то изменить в процессе обучения",
+    how:"Оценивание — часть обучения, не его итог.\n«ЕЩЁ НЕ» вместо «неправильно»: «Ты пока не дошёл до этого шага» меняет идентичность с «неудачник» на «в пути».\nХВАЛИ ПРОЦЕСС: «Ты заметил, что что-то не сходится, и попробовал иначе» — ценнее, чем «молодец».\nEXIT TICKET: один вопрос в конце — что понял, что нет. Следующий урок начинаешь адресно.\nНЕ «КТО ЗНАЕТ?» — а «ЧТО ТЫ ДУМАЕШЬ?». Первый вопрос приглашает только уверенных.",
+    tip:"Похвала за процесс строит мышление и желание пробовать снова. Похвала за результат строит зависимость от одобрения и страх ошибиться.",
+    bonus:"Медленные видят, что их вопрос важен. Быстрые через exit ticket обнаруживают пробелы, которых не замечали.",
+    source:"Dweck — growth mindset; Black & Wiliam «Inside the Black Box» (1998); EEF" },
+  { id:6, category:"Роль учителя", bg:"#DDF2EF", accent:"#00695C", icon:"🎙️",
+    title:"Меньше говори. Больше наблюдай. Спрашивай иначе",
+    tags:["роль учителя","язык конструктивиста","профессионализм"],
+    problem:"Учитель говорит большую часть урока — и считает это работой",
+    how:"Попробуй изменить привычные фразы:\n«Правильно!» → «Как ты до этого дошёл?»\n«Неправильно» → «Что произойдёт, если попробовать иначе?»\n«Я сейчас объясню» → «Кто может объяснить это своими словами?»\n«Кто не понял — поднимите руку» → «Что было самым сложным — запишите на листочке»",
+    tip:"Охраняй моменты замешательства. Именно здесь начинается мышление — и именно здесь учитель чаще всего торопится дать ответ.",
+    bonus:"Чем меньше учитель говорит — тем больше думают дети. Это не лень. Это профессионализм.",
+    source:"Vygotsky — социальный конструктивизм; Dewey — learning by doing" },
+  { id:7, category:"Структура урока", bg:"#DDE3F5", accent:"#283593", icon:"🗓️",
+    title:"Планируй для диапазона, а не для «среднего»",
+    tags:["планирование","дифференциация","точки входа"],
+    problem:"Урок строится на «среднего» ученика — а такого в реальном классе почти не существует",
+    how:"Хороший урок изначально предполагает несколько уровней входа и глубины.\nПри планировании спрашивай себя: как в эту тему войдут те, кто ещё не готов? Кто уже знает? Кто хочет глубже?\nПРАКТИЧНЫЙ СТАРТ (правило 80/20): не нужно дифференцировать каждый урок. Один глубоко дифференцированный урок в неделю + простой приём «вызов-задание на доске» для быстрых в остальное время — это уже серьёзный сдвиг.\nНАЧНИ С ОДНОГО ПРИЁМА на 2–3 недели. Когда войдёт в привычку — добавь следующий. Через 1–2 месяца дифференциация перестаёт быть задачей и становится нормой.",
+    tip:"Учителя, которые начинают с малого и идут постепенно, в итоге делают больше, чем те, кто пытается перестроить всё сразу и бросает.",
+    bonus:"Планируй не отдельные уроки, а блоки из 4–5 уроков по теме. Один вечер на всю тему — и каждый следующий день требует только 10 минут на корректировку.",
+    source:"Tomlinson, C.A. «The Differentiated Classroom» (1999); UDL Guidelines, CAST" },
+  { id:8, category:"Структура урока", bg:"#DDE3F5", accent:"#283593", icon:"📦",
+    title:"Создай банк разноуровневых заданий",
+    tags:["планирование","материалы","устойчивость"],
+    problem:"Каждую неделю учитель придумывает задания с нуля — это изматывает и не масштабируется",
+    how:"Не нужно изобретать каждый раз. Начни собирать папку (физическую или в облаке) с удачными заданиями по уровням.\nПОСЛЕ КАЖДОГО УРОКА: клади в копилку 1–2 лучших задания. Через год — готовая база.\nУНИВЕРСАЛЬНЫЕ РАМКИ, которые работают под любую тему:\n– Must–May–Challenge: обязательное → можно → вызов\n– Mild–Medium–Spicy: базовый → стандартный → острый\n– Станции: teacher table · collaborative · independent · creative\nДля станций держи банк универсальных активностей: «придумай задачу», «найди ошибку», «объясни другу», «сделай схему» — подставляй под любую тему.\nМНОГОРАЗОВЫЕ МАТЕРИАЛЫ: карточки подсказок, шаблоны наблюдений, исследовательские таблицы — адаптируются под разные темы без полной переработки.",
+    tip:"Создай рамку — и меняй только содержание. Это и есть устойчивая система.",
+    bonus:"Заламинируй карточки и давай маркеры — дети стирают и используют снова. Меньше бумаги, меньше подготовки.",
+    source:"Tomlinson — differentiated instruction; UDL Guidelines, CAST" },
+  { id:9, category:"Опора и среда", bg:"#EDE8E0", accent:"#5D4037", icon:"🧭",
+    title:"Настрой класс на самообслуживание",
+    tags:["среда","автономия","навигация"],
+    problem:"Дети дёргают учителя по каждой мелочи — он становится «узким горлышком» всего урока",
+    how:"Сделай среду так, чтобы дети могли двигаться без тебя:\nПОЛКА С КАРТОЧКАМИ-ПОМОЩНИКАМИ по основным темам. Ребёнок знает: если трудно — иди к полке, а не к учителю.\nСТЕНД «ПРОВЕРЬ СЕБЯ» с ответами к типовым заданиям: ученики сверяются сами, не ожидая очереди.\nЯКОРНЫЕ АКТИВНОСТИ для быстрых — фиксированный набор (логические задачи, дневники, творческие задания): дети знают, что брать, когда закончили.\nПРАВИЛО НАВИГАЦИИ: стена → задание → партнёр → карточки → только потом учитель.",
+    tip:"Среда самообслуживания требует усилий в начале — и работает весь год без дополнительных затрат.",
+    bonus:"«Дневник удачных находок»: после урока записывай 2–3 вещи, которые сработали, и 1–2, которые нужно изменить. 3 минуты — и ты учишься на своём опыте системно.",
+    source:"Montessori — prepared environment; UDL Guidelines, CAST" },
+  { id:10, category:"Мышление и вопросы", bg:"#D4ECD4", accent:"#1B5E20", icon:"👁️",
+    title:"Сначала наблюдай — потом вмешивайся",
+    tags:["роль учителя","наблюдение","диагностика"],
+    problem:"Учитель даёт готовое объяснение сразу, не увидев, где именно возникло затруднение",
+    how:"Прежде чем вмешаться — посмотри, как дети рассуждают: услышь их гипотезы, пойми, где возник затруднение.\nЗАТЕМ выбирай: нужно ли объяснение вообще, или достаточно одного вопроса-направлялки?\nСДЕЛАЙ ОБУЧЕНИЕ ВИДИМЫМ: регулярно показывай детям, как развивается их понимание:\n– «Я на шаге 2 из 4» вместо «понял / не понял»\n– Карты знаний: что уже умею, что в процессе, что ещё открыто\n– KWL-чарт (Что знаю? Что хочу узнать? Что узнал?) — в начале и конце темы\n– Портфолио или дневник обучения: ребёнок видит собственный прогресс\nХвали способы думать, а не только правильный результат.",
+    tip:"Момент, когда ты наблюдаешь и молчишь — это не пауза. Это диагностика в реальном времени. Учитель, который видит, принимает лучшие решения.",
+    bonus:"KWL-чарты хорошо работают в начале модуля: дети сами формулируют, что хотят узнать — и это становится планом темы.",
+    source:"Hattie — Visible Learning; Vygotsky — ZPD; Ritchhart «Making Thinking Visible» (2011)" },
+  { id:11, category:"Оценивание", bg:"#F5E6F0", accent:"#6A1B9A", icon:"🔁",
+    title:"Встраивай рефлексию как обязательный элемент",
+    tags:["рефлексия","метапознание","формирующее оценивание"],
+    problem:"Рефлексия — это то, что «если останется время». Времени не остаётся никогда",
+    how:"В конце даже насыщенного урока — 2–3 минуты на короткую рефлексию.\nОЦЕНИВАЙ ЗОНЫ БЛИЖАЙШЕГО РАЗВИТИЯ заранее: через KWL-чарты или короткие беседы определяй, кто где. Медленным — скаффолдинг (постепенная опора) и подсказки. Быстрым — вызовы для самостоятельного исследования.\nОБЪЯСНЯЙ ДЕТЯМ, как их отзывы влияют на твою работу: «Вы написали, что трудно было с дробями, — поэтому сегодня начнём с этого». Это делает рефлексию настоящей, а не формальной.",
+    tip:"Рефлексия — не про оценку. Это момент, когда ребёнок становится автором своего обучения. Именно здесь растёт метапознание.",
+    bonus:"Используй рефлексию для планирования следующего урока. Тогда подготовка занимает меньше времени.",
+    source:"EEF «Metacognition and Self-regulation» (2021); Vygotsky — ZPD; Flavell (1976)" }
+];
+
+/* ══════════════════════════════════
+   ЧАСТЫЕ ОШИБКИ
+══════════════════════════════════ */
+const oshibki = [
+  { id:1, category:"Структура урока", bg:"#DDE3F5", accent:"#283593", icon:"🎯",
+    title:"Строить урок для «среднего» ученика",
+    tags:["планирование","дифференциация","уровни"],
+    problem:"Урок рассчитан на «среднего» — сильные скучают, слабые теряются, и никто не получает нужного",
+    how:"ПОЧЕМУ ТАК ПРОИСХОДИТ: «средний» кажется самым удобным ориентиром. Но в реальном классе он почти не существует — есть диапазон.\nЧТО ДЕЛАТЬ ВМЕСТО:\n→ Планируй несколько уровней участия в одном задании: не три разных задания, а одно ядро с разными путями (подсказки, образец, открытый вопрос).\n→ Разделяй: обязательная часть → дополнительная → исследовательская.\n→ Диагностируй заранее: KWL-чарт или 3-минутное задание покажут, кто где находится.",
+    tip:"Три разных задания для трёх «групп» — это не дифференциация, а три урока в одном. Дети чувствуют ярлыки, учитель тонет в подготовке.",
+    bonus:"Одно задание с разными опорами и маршрутами — и каждый работает на своём уровне глубины — при одном задании для всех.",
+    source:"Tomlinson, C.A. «The Differentiated Classroom» (1999); UDL Guidelines, CAST" },
+  { id:2, category:"Роль учителя", bg:"#DDF2EF", accent:"#00695C", icon:"🔁",
+    title:"Повторить то же самое громче",
+    tags:["объяснение","помощь","точка входа"],
+    problem:"Ученик не понял — учитель объясняет снова теми же словами, только медленнее и громче",
+    how:"ПОЧЕМУ ТАК ПРОИСХОДИТ: самый естественный импульс — кажется, ребёнок просто «не услышал». Но если не понял с первого раза, объяснение не попало в его точку понимания.\nЧТО ДЕЛАТЬ ВМЕСТО:\n→ Смени способ: объяснял словами — покажи на схеме или предмете.\n→ Задай встречный вопрос: «С какого момента стало непонятно?»\n→ Попроси другого ученика объяснить своими словами — «детский» язык часто точнее.\n→ Много фронтальной работы? Чередуй: мини-объяснение → пары → обсуждение → практика.",
+    tip:"Непонимание — сигнал о том, что нужен другой маршрут, а не более громкий тот же самый.",
+    bonus:"Если объясняешь одно и то же третий раз — это сигнал пересмотреть структуру задания, а не усердие ребёнка.",
+    source:"Vygotsky — ZPD; Hattie «Visible Learning» (2009); Fisher & Frey — GRR" },
+  { id:3, category:"Дифференциация", bg:"#FFF3CD", accent:"#BF360C", icon:"🏁",
+    title:"Ждать, пока все закончат",
+    tags:["темп","время урока","расширение"],
+    problem:"Учитель не двигается дальше, пока последний ученик не закончит — быстрые скучают, медленные в стрессе",
+    how:"ПОЧЕМУ ТАК ПРОИСХОДИТ: хочется честности и одинакового времени для всех. Но это создаёт две проблемы одновременно.\nЧТО ДЕЛАТЬ ВМЕСТО:\n→ Планируй урок с «поясом расширения»: обязательное ядро + задания для тех, кто закончил.\n→ Якорные активности для быстрых: фиксированный набор (логические задачи, дневники, творческие задания) — дети знают, что брать сами.\n→ Проговори детям: «Важно качественно сделать главное — не обязательно закончить всё».",
+    tip:"Финишная черта в одном месте — иллюзия равенства. Настоящее равенство — когда каждый движется вперёд.",
+    bonus:"Быстрые дети без дела — дисциплинарная проблема. Банк якорных активностей решает её превентивно.",
+    source:"Tomlinson — differentiated instruction; UDL Guidelines, CAST" },
+  { id:4, category:"Мышление и вопросы", bg:"#D4ECD4", accent:"#1B5E20", icon:"🙋",
+    title:"«Кто знает?» вместо «Что ты думаешь?»",
+    tags:["вопросы","вовлечённость","психологическая безопасность"],
+    problem:"Учитель спрашивает «Кто знает?» — и всегда отвечают одни и те же три ребёнка",
+    how:"ПОЧЕМУ ТАК ПРОИСХОДИТ: быстро, удобно, создаёт иллюзию, что класс работает. Но большинство детей — зрители.\nЧТО ДЕЛАТЬ ВМЕСТО:\n→ «Что ты думаешь?» — приглашает всех, не требует «знать».\n→ Отложенный старт: «Думаем 20 секунд — потом отвечаем».\n→ «Все пишут ответ на листочке» — прежде чем кто-то скажет вслух.\n→ Случайный выбор отвечающего (карточки с именами) — снимает давление.\n→ Дай право на «Я ещё думаю» — это лучше молчания из страха.",
+    tip:"Вопрос «Кто знает?» отбирает голос у тех, кто думает медленнее. А именно им важнее всего быть услышанными.",
+    bonus:"Атмосфера безопасного мышления строится на мелочах: можно пробовать, сомневаться, менять мнение, задавать вопросы. Это не само по себе — это результат твоих реакций.",
+    source:"Black & Wiliam «Inside the Black Box» (1998); Rowe — wait time research" },
+  { id:5, category:"Обратная связь", bg:"#F5E6F0", accent:"#6A1B9A", icon:"⭐",
+    title:"«Молодец, правильно!» как главная обратная связь",
+    tags:["обратная связь","Двек","установка на рост"],
+    problem:"Учитель хвалит результат — «правильно», «молодец» — и думает, что это мотивирует",
+    how:"ПОЧЕМУ ТАК ПРОИСХОДИТ: похвала кажется поддержкой. Но похвала за результат формирует страх ошибиться и зависимость от одобрения.\nЧТО ДЕЛАТЬ ВМЕСТО:\n→ Хвали процесс: «Ты не сдался, когда первый способ не сработал».\n→ Описывай конкретно: «Ты заметил ловушку в задаче — это важно».\n→ Вопрос вместо оценки: «Как ты до этого дошёл?»\n→ «Ещё не» вместо «неправильно»: «Ты пока не дошёл до этого шага».\n→ Акцент на понимании, а не на объёме: лучше глубоко разобрать одну задачу, чем быстро решить десять поверхностно.",
+    tip:"«Молодец» закрывает разговор. «Как ты до этого дошёл?» — открывает его.",
+    bonus:"Дети, которых хвалят за ум, избегают сложных задач — чтобы не рисковать репутацией. ",
+    source:"Dweck, C. «Mindset» (2006); Hattie & Timperley «The Power of Feedback» (2007)" },
+  { id:6, category:"Взаимодействие", bg:"#E8E0F0", accent:"#4A148C", icon:"🏷️",
+    title:"Жёсткое деление на «сильных» и «слабых»",
+    tags:["группы","ярлыки","гибкие группы"],
+    problem:"Фиксированные группы на весь год: «эти всегда в сильной», «эти — в слабой» — ярлык становится судьбой",
+    how:"ПОЧЕМУ ТАК ПРОИСХОДИТ: кажется удобным — один раз разделил и работаешь. Но фиксированные ярлыки снижают ожидания и блокируют рост.\nЧТО ДЕЛАТЬ ВМЕСТО:\n→ Дели по задаче и текущему статусу, а не по «типу ребёнка»: сегодня ребёнок может быть экспертом в одной теме и новичком в другой.\n→ Используй гибкие группы: иногда по уровню, иногда смешанные, иногда по интересу — регулярно меняй состав.\n→ Групповая работа без структуры — это хаос. Давай роли: «объясняющий», «задающий вопросы», «проверяющий» — и меняй их.",
+    tip:"Смешанный — не значит лучший. Иногда два «медленных» вместе, без давления быстрого, мыслят глубже и смелее.",
+    bonus:"Роли называй нейтрально: не «лидер и помощники», а «спикер, секретарь, проверяющий». Иерархия в названиях — это тоже ярлыки.",
+    source:"Kagan — cooperative structures; Johnson & Johnson (1989); Tomlinson — flexible grouping" },
+  { id:7, category:"Опора и среда", bg:"#EDE8E0", accent:"#5D4037", icon:"🆘",
+    title:"Помогать раньше, чем ребёнок застрял",
+    tags:["скаффолдинг","саморегуляция","ЗБР"],
+    problem:"Учитель подходит и помогает, как только видит затруднение — ребёнок не успевает поработать с трудностью сам",
+    how:"ПОЧЕМУ ТАК ПРОИСХОДИТ: хочется помочь. Но трудность — рабочее состояние мышления, а не сигнал тревоги.\nЧТО ДЕЛАТЬ ВМЕСТО:\n→ Дай время: 2–3 минуты после того, как ребёнок «завис» — прежде чем подойти.\n→ Вопрос вместо ответа: «Что ты уже попробовал? Что не сработало?»\n→ Направь к ресурсу: «Посмотри на подсказку 1» или «Спроси партнёра».\n→ Не решай за ребёнка — даже если очень хочется.",
+    tip:"Момент, когда ребёнок застрял и пытается выбраться сам — это и есть обучение. Не прерывай его слишком рано.",
+    bonus:"Помощь, которая приходит сразу, создаёт зависимость. Помощь, которая приходит вовремя, создаёт самостоятельность.",
+    source:"Wood, Bruner & Ross (1976) — scaffolding; Vygotsky — ZPD" },
+  { id:8, category:"Оценивание", bg:"#F5E6F0", accent:"#6A1B9A", icon:"📋",
+    title:"Оценивать только в конце",
+    tags:["формирующее оценивание","диагностика","навигация"],
+    problem:"Учитель узнаёт, что класс не понял тему — на контрольной. Уже поздно что-то менять",
+    how:"ПОЧЕМУ ТАК ПРОИСХОДИТ: оценка воспринимается как итог, а не как инструмент навигации.\nЧТО ДЕЛАТЬ ВМЕСТО:\n→ Микро-проверки во время урока: жест, мини-карточка, «объясни соседу».\n→ Вопрос-развилка в середине урока — один точный вопрос с 4 вариантами.\n→ Exit ticket в конце — следующий урок начинаешь адресно.\n→ Критерии успеха в детских формулировках: «я могу... с подсказкой / без / объяснить другому».",
+    tip:"Оценивание без последствий — пустая процедура. Ценность в том, что ты делаешь с результатом в следующие две минуты.",
+    bonus:"Формирующее оценивание — разговор, а не измерение. Его цель — помочь ребёнку понять, где он.",
+    source:"Black & Wiliam «Inside the Black Box» (1998); Wiliam «Embedded Formative Assessment» (2011)" },
+  { id:9, category:"Роль учителя", bg:"#DDF2EF", accent:"#00695C", icon:"🎭",
+    title:"Учитель — узкое горлышко урока",
+    tags:["роль учителя","автономия","самопроверка"],
+    problem:"Каждый шаг ученика должен быть проверен учителем — очередь у его стола стала нормой",
+    how:"ПОЧЕМУ ТАК ПРОИСХОДИТ: кажется, что контроль = качество. Но очередь означает, что быстрые скучают, медленные сидят без дела.\nЧТО ДЕЛАТЬ ВМЕСТО:\n→ Станции самопроверки: бланки с ответами в открытом доступе — дети сверяются сами.\n→ Правило навигации: стена → партнёр → карточки → только потом учитель.\n→ Отвечай вопросом на вопрос: «А как ты думаешь?», «Что уже пробовал?»\n→ Передавай роль эксперта: «Маша уже разобралась — спроси её».",
+    tip:"Активный учитель кажется хорошим учителем. Но чем больше делает учитель — тем меньше думают дети.",
+    bonus:"Учитель, который наблюдает и молчит, не бездельничает — он читает класс. Это высший пилотаж.",
+    source:"Vygotsky — социальный конструктивизм; Dewey — учитель как facilitator; UDL Guidelines" },
+  { id:10, category:"Дифференциация", bg:"#FFF3CD", accent:"#BF360C", icon:"⚖️",
+    title:"Дифференциация = «упростить» одним, «добавить» другим",
+    tags:["дифференциация","глубина","уровни"],
+    problem:"Слабым разжёвываем и упрощаем, сильным добавляем ещё 10 примеров — это не дифференциация",
+    how:"ПОЧЕМУ ТАК ПРОИСХОДИТ: «упростить / усложнить» — самая очевидная логика. Но она работает против обеих групп.\nЧТО ДЕЛАТЬ ВМЕСТО:\n→ Думай не «упростить/усложнить», а что именно подправить: размер шага, количество опоры, степень самостоятельности, объём.\n→ Быстрым — не «больше того же», а другой тип задач: исследование, придумать задачу, найти ошибку, сравнить способы, объяснить другому.\n→ Медленным — не облегчённая версия, а та же цель с нужной опорой: подсказки, образец, меньший шаг.\nПРОСТЫЕ РАМКИ, которые помогают структурировать:\n– Must–May–Challenge: обязательное → по выбору → вызов\n– Mild–Medium–Spicy: базовый → стандартный → исследовательский\n– Станции: стол учителя · группа · самостоятельная практика · творческий выбор",
+    tip:"Скорость — это не наказание. Если быстрый ребёнок получает «ещё 10 таких же» — он учится избегать скорости.",
+    bonus:"Рамки Must–May–Challenge и станции работают под любую тему. Создай шаблон — и подставляй новое содержание.",
+    source:"Tomlinson «The Differentiated Classroom» (1999); UDL Guidelines, CAST; Dweck — growth mindset" }
+];
+
+/* ══════════════════════════════════
+   ЛОГИКА ПРИЛОЖЕНИЯ
+══════════════════════════════════ */
+let activeTab = 'start';
+let activeFilter = 'Все';
+let openCard = null;
+
+const tabData = {
+  priemy: {
+    data: priemy,
+    categories: ["Все","Мышление и вопросы","Структура урока","Дифференциация","Опора и среда","Взаимодействие","Обратная связь","Оценивание","Роль учителя"],
+    fieldLabel: "Проблема"
+  },
+  rekomendacii: {
+    data: rekomendacii,
+    categories: ["Все","Мышление и вопросы","Структура урока","Дифференциация","Опора и среда","Взаимодействие","Обратная связь","Оценивание","Роль учителя"],
+    fieldLabel: "Зачем"
+  },
+  oshibki: {
+    data: oshibki,
+    categories: ["Все","Мышление и вопросы","Структура урока","Дифференциация","Опора и среда","Взаимодействие","Обратная связь","Оценивание","Роль учителя"],
+    fieldLabel: "Ситуация"
+  }
+};
+
+function switchTab(tab, btn) {
+  activeTab = tab;
+  activeFilter = 'Все';
+  openCard = null;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('search').value = '';
+
+  const isStart = tab === 'start';
+  document.getElementById('start-section').style.display = isStart ? 'block' : 'none';
+  document.getElementById('filters-bar').style.display = isStart ? 'none' : '';
+  document.getElementById('count-line').style.display = isStart ? 'none' : '';
+  document.getElementById('cards-grid').style.display = isStart ? 'none' : '';
+  document.getElementById('legend-block').style.display = (!isStart && tab === 'priemy') ? '' : 'none';
+  document.getElementById('pdf-btn') && (document.getElementById('pdf-btn').style.display = isStart ? 'none' : '');
+
+  if (!isStart) {
+    renderFilters();
+    renderCards();
+  }
+}
+
+function switchTabByName(tab) {
+  const btns = document.querySelectorAll('.tab-btn');
+  btns.forEach(b => {
+    if (b.getAttribute('onclick') && b.getAttribute('onclick').includes("'" + tab + "'")) {
+      switchTab(tab, b);
+    }
+  });
+}
+
+function renderFilters() {
+  const { categories } = tabData[activeTab];
+  const wrap = document.getElementById('filter-btns');
+  wrap.innerHTML = '';
+  categories.forEach(cat => {
+    const btn = document.createElement('button');
+    btn.className = 'filter-btn' + (cat === activeFilter ? ' active' : '');
+    btn.textContent = cat;
+    btn.onclick = () => {
+      activeFilter = cat;
+      openCard = null;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderCards();
+    };
+    wrap.appendChild(btn);
+  });
+}
+
+function renderCards() {
+  const { data, fieldLabel } = tabData[activeTab];
+  const q = document.getElementById('search').value.toLowerCase();
+
+  const filtered = data.filter(s => {
+    const matchCat = activeFilter === 'Все' || s.category === activeFilter;
+    const matchQ = !q || s.title.toLowerCase().includes(q)
+      || s.problem.toLowerCase().includes(q)
+      || s.tags.some(t => t.toLowerCase().includes(q));
+    return matchCat && matchQ;
+  });
+
+  const n = filtered.length;
+  const word = n === 1 ? 'карточка' : n < 5 ? 'карточки' : 'карточек';
+  document.getElementById('count-line').textContent = n + ' ' + word + ' найдено';
+
+  document.getElementById('cnt-priemy').textContent = priemy.length;
+  document.getElementById('cnt-rekomendacii').textContent = rekomendacii.length;
+  document.getElementById('cnt-oshibki').textContent = oshibki.length;
+
+  const grid = document.getElementById('cards-grid');
+  grid.innerHTML = '';
+
+  filtered.forEach(st => {
+    const uid = st.id + '-' + activeTab;
+    const card = document.createElement('div');
+    card.className = 'card' + (openCard === uid ? ' open' : '');
+    card.style.setProperty('--card-accent', st.accent);
+    card.style.background = st.bg;
+
+    card.innerHTML = `
+      <div class="card-top">
+        <span class="card-icon">${st.icon}</span>
+        <span class="cat-badge">${st.category}</span>
+      </div>
+      <div class="card-title">${st.title}</div>
+      <div class="card-problem"><strong>${fieldLabel}:</strong> ${st.problem}</div>
+      <div class="tags">${st.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>
+      <div class="more-link">${openCard === uid ? '' : 'Подробнее →'}</div>
+      <div class="card-body">
+        <div class="section-label">Как это работает</div>
+        <div class="how-text">${st.how}</div>
+        <div class="tip-block">
+          <div class="tip-label">💡 Совет</div>
+          <div class="tip-text">${st.tip}</div>
+        </div>
+        <div class="bonus-text">${st.bonus}</div>
+        ${st.examples ? `<div class="examples-block">
+          <div class="examples-toggle" onclick="toggleExamples(event, this)">📚 Примеры для урока ▾</div>
+          <div class="examples-content">${st.examples.replace(/\n/g, '<br>')}</div>
+        </div>` : ''}
+        ${st.source ? `<div class="source-text">${st.source}</div>` : ''}
+        <div class="collapse-link">Свернуть ↑</div>
+      </div>
+    `;
+
+    card.onclick = (e) => {
+      if (e.target.classList.contains('collapse-link')) {
+        openCard = null;
+      } else {
+        openCard = openCard === uid ? null : uid;
+      }
+      renderCards();
+    };
+
+    grid.appendChild(card);
+  });
+}
+
+
+
+function toggleGlossary(el) {
+  const content = el.nextElementSibling;
+  const arrow = el.querySelector('.glossary-arrow');
+  const open = content.classList.contains('open');
+  content.classList.toggle('open', !open);
+  arrow.style.transform = open ? '' : 'rotate(180deg)';
+}
+
+function toggleExamples(e, el) {
+  e.stopPropagation();
+  const content = el.nextElementSibling;
+  const open = content.style.display === 'block';
+  content.style.display = open ? 'none' : 'block';
+  el.textContent = open ? '📚 Примеры для урока ▾' : '📚 Примеры для урока ▴';
+}
+
+function downloadPDF() {
+  const { data, fieldLabel } = tabData[activeTab];
+  const q = document.getElementById('search').value.toLowerCase();
+  const filtered = data.filter(s => {
+    const matchCat = activeFilter === 'Все' || s.category === activeFilter;
+    const matchQ = !q || s.title.toLowerCase().includes(q)
+      || s.problem.toLowerCase().includes(q)
+      || s.tags.some(t => t.toLowerCase().includes(q));
+    return matchCat && matchQ;
+  });
+
+  const tabNames = { priemy: 'Приёмы', rekomendacii: 'Рекомендации', oshibki: 'Частые ошибки' };
+  const filterName = activeFilter === 'Все' ? '' : ' · ' + activeFilter;
+  const title = tabNames[activeTab] + filterName;
+
+  const win = window.open('', '_blank');
+  win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
+  <title>${title}</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Mulish:wght@300;400;600;700&display=swap');
+    body { font-family: 'Mulish', sans-serif; color: #1A1A18; line-height: 1.6; padding: 32px; max-width: 800px; margin: 0 auto; }
+    h1 { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 400; margin-bottom: 8px; }
+    .subtitle { font-size: 12px; color: #888; margin-bottom: 32px; }
+    .card { border-radius: 10px; padding: 20px 24px; margin-bottom: 18px; break-inside: avoid; border: 1px solid rgba(0,0,0,0.08); }
+    .cat { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; opacity: .7; margin-bottom: 6px; }
+    .card-title { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+    .field-label { font-weight: 700; font-size: 12px; }
+    .field { font-size: 12px; margin-bottom: 8px; color: #333; }
+    .how { font-size: 12px; white-space: pre-line; color: #222; margin-bottom: 8px; }
+    .tip { font-size: 11px; font-style: italic; border-left: 3px solid #888; padding-left: 10px; margin-bottom: 8px; color: #444; }
+    .bonus { font-size: 11px; color: #555; margin-bottom: 8px; font-style: italic; }
+    .section-lbl { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: #888; margin-bottom: 4px; margin-top: 10px; }
+    .examples-wrap { margin-top: 10px; border-top: 1px dashed #ccc; padding-top: 8px; }
+    .examples-lbl { font-size: 10px; font-weight: 700; color: #666; margin-bottom: 4px; }
+    .examples { font-size: 11px; color: #333; white-space: pre-line; }
+    .source { font-size: 10px; color: #999; font-style: italic; border-top: 1px solid #eee; padding-top: 6px; margin-top: 8px; }
+    @media print { body { padding: 0; } .card { break-inside: avoid; } }
+  </style></head><body>`);
+  win.document.write(`<h1>${title}</h1><p class="subtitle">${filtered.length} карточек · архитектура-урока.pdf</p>`);
+  filtered.forEach(st => {
+    const howText = st.how.replace(/<[^>]+>/g,'').replace(/\\n/g,'\n');
+    const exText = st.examples ? st.examples.replace(/\\n/g,'\n') : '';
+    win.document.write(`<div class="card" style="background:${st.bg}">
+      <div class="cat">${st.category}</div>
+      <div class="card-title">${st.icon} ${st.title}</div>
+      <div class="field"><span class="field-label">${fieldLabel}:</span> ${st.problem}</div>
+      <div class="section-lbl">Как это работает</div>
+      <div class="how">${howText}</div>
+      <div class="tip">💡 ${st.tip}</div>
+      ${st.bonus ? `<div class="bonus">✦ ${st.bonus}</div>` : ''}
+      ${exText ? `<div class="examples-wrap"><div class="examples-lbl">📚 Примеры для урока</div><div class="examples">${exText}</div></div>` : ''}
+      ${st.source ? `<div class="source">${st.source}</div>` : ''}
+    </div>`);
+  });
+  win.document.write(`<script>window.onload=()=>window.print()<\/script></body></html>`);
+  win.document.close();
+}
+
+// Init: show start tab
+document.getElementById('start-section').style.display = 'block';
+document.getElementById('filters-bar').style.display = 'none';
+document.getElementById('count-line').style.display = 'none';
+document.getElementById('cards-grid').style.display = 'none';
+document.getElementById('legend-block').style.display = 'none';
+</script>
+</body>
+</html>
